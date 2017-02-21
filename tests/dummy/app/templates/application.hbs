@@ -1,15 +1,16 @@
 <h2 id='title'>Welcome to Ember.js</h2>
 
 {{textarea value=jsonString cols="100" rows="10"}}
+<button {{action 'refreshJson'}}>Update</button>
 
 {{outlet}}
 
 <h3>Standard styles</h3>
-{{ ember-json-pretty jsonObj=this.model.menus }}
+{{ember-json-pretty jsonObj=model}}
 
 
 <h3>Change styles</h3>
-{{ ember-json-pretty jsonObj=this.model.menus
+{{ ember-json-pretty jsonObj=model
     options='{
         "keyColor":"#00FF7F",
         "keyHighlight":"#FAFAD2",

@@ -17,7 +17,7 @@ var _addBrace = function(element, numberSpaces, hasPlus, braceColor, braceHighli
     jsonObj.plusId = 'plus_' + plusId;
     jsonObj.isBlank = false;
     jsonObj.element = element;
-    jsonObj.style = 'color:' + braceColor + '; background-color:' + braceHighlight;
+    jsonObj.style = Ember.String.htmlSafe(`color:${braceColor}; background-color:${braceHighlight}`);
     jsonObj.class = 'json-brace';
 
     jsonLine.elements.push(jsonObj);
@@ -32,7 +32,7 @@ var _addBlank = function(){
     jsonObj.plusId = null;
     jsonObj.element = '';
     jsonObj.isBlank = true;
-    jsonObj.style = '';
+    jsonObj.style = Ember.String.htmlSafe('');
     jsonObj.class = 'json-blank';
 
     return jsonObj;
@@ -45,7 +45,7 @@ var _addKey = function(key, numberSpaces, keyColor, keyHighlight){
     jsonObj.plusId = null;
     jsonObj.isBlank = false;
     jsonObj.element = key;
-    jsonObj.style = 'color:' + keyColor + '; background-color:' + keyHighlight;
+    jsonObj.style = Ember.String.htmlSafe(`color:${keyColor}; background-color:${keyHighlight}`);
     jsonObj.class = 'json-key';
 
     return jsonObj;
@@ -58,7 +58,7 @@ var _addTwoPoints = function(){
     jsonObj.plusId = null;
     jsonObj.isBlank = false;
     jsonObj.element = ':';
-    jsonObj.style = '';
+    jsonObj.style = Ember.String.htmlSafe('');
     jsonObj.class = 'json-two-points';
 
     return jsonObj;
@@ -101,7 +101,7 @@ var _addStringValue = function(value, stringColor, stringHighlight){
     jsonObj.plusId = null;
     jsonObj.isBlank = false;
     jsonObj.element = value;
-    jsonObj.style = 'color:' + stringColor + '; background-color:' + stringHighlight;
+    jsonObj.style = Ember.String.htmlSafe(`color:${stringColor}; background-color:${stringHighlight}`);
     jsonObj.class = 'json-string';
 
     return jsonObj;
@@ -118,7 +118,7 @@ var _addStandardValue = function(value, valueColor, valueHighlight){
     jsonObj.plusId = null;
     jsonObj.isBlank = false;
     jsonObj.element = value;
-    jsonObj.style = 'color:' + valueColor + '; background-color:' + valueHighlight;
+    jsonObj.style = Ember.String.htmlSafe(`color:${valueColor}; background-color:${valueHighlight}`);
     jsonObj.class = 'json-value';
 
     return jsonObj;
@@ -131,7 +131,7 @@ var _addComma = function(){
     jsonObj.plusId = null;
     jsonObj.isBlank = false;
     jsonObj.element = ',';
-    jsonObj.style = '';
+    jsonObj.style = Ember.String.htmlSafe('');
     jsonObj.class = '';
 
     return jsonObj;
@@ -276,7 +276,7 @@ var _createJSONTree = function(obj, numberSpaces, options, hasComma) {
         jsonObj.plusId = 'plus_' + plusId;
         jsonObj.element = '[';
         jsonObj.isBlank = false;
-        jsonObj.style = 'color:' + options['bracketColor'] + '; background-color:' + options['bracketHighlight'];
+        jsonObj.style = Ember.String.htmlSafe(`color:${options['bracketColor']}; background-color:${options['bracketHighlight']}`);
         jsonObj.class = 'json-bracket';
 
         jsonLine.elements.push(jsonObj);
@@ -297,7 +297,7 @@ var _createJSONTree = function(obj, numberSpaces, options, hasComma) {
                 internaljsonObj.plusId = '';
                 internaljsonObj.element = newObj;
                 internaljsonObj.isBlank = false;
-                internaljsonObj.style = 'color:' + options['stringColor'] + '; background-color:' + options['stringHighlight'];
+                internaljsonObj.style = Ember.String.htmlSafe(`color:${options['stringColor']}; background-color:${options['stringHighlight']}`);
                 internaljsonObj.class = 'json-string';
 
                 for(var counter = 0; counter < internalBlanks; counter = counter +1){
@@ -352,7 +352,7 @@ var _createJSONTree = function(obj, numberSpaces, options, hasComma) {
         jsonObj.plusId = null;
         jsonObj.element = ']';
         jsonObj.isBlank = false;
-        jsonObj.style = 'color:' + options['bracketColor'] + '; background-color:' + options['bracketHighlight'];
+        jsonObj.style = Ember.String.htmlSafe(`color:${options['bracketColor']}; background-color:${options['bracketHighlight']}`);
         jsonObj.class = 'json-bracket';
 
         jsonLine.elements.push(jsonObj);
@@ -392,21 +392,16 @@ export default Ember.Component.extend({
         bracketHighlight: '#FFFFFF'
     },
     options: {},
-    id: '',
-    attributeBindings: ['customId:id'],
-    customId: '',
-    pretty: function () {
+    pretty: Ember.computed('jsonObj', function () {
         var jsonObj = this.get('jsonObj'),
             options,
             json_pretty,
             randomId = Math.floor(Math.random() * 60000) + 1;
 
-        this.set('customId', randomId);
-
         if(typeof jsonObj === 'string'){
             jsonObj = JSON.parse(jsonObj);
         }
-     
+
         if(this.options){
             if(typeof this.options === 'object'){
                 options = Ember.$.extend({}, this.optionsDefault, this.options);
@@ -423,21 +418,19 @@ export default Ember.Component.extend({
 
         json_pretty = _prettyPrint( jsonObj,
                                     options);
-        
+
         return json_pretty;
-    }.property('jsonObj'),
+    }),
     actions: {
         toggleExpand: function(plusId){
-            var id = this.get('customId');
-            if(Ember.$('#' + id).find('#' + plusId).hasClass('fa-plus-square-o')){
-                Ember.$('#' + id).find('#' + plusId).removeClass('fa-plus-square-o');
-                Ember.$('#' + id).find('#' + plusId).addClass('fa-minus-square-o');
-                Ember.$('#' + id).find('.jsonTreeView').find('[data-id="' + plusId + '"]').show();
-            }
-            else{
-                Ember.$('#' + id).find('#' + plusId).removeClass('fa-minus-square-o');
-                Ember.$('#' + id).find('#' + plusId).addClass('fa-plus-square-o');
-                Ember.$('#' + id).find('.jsonTreeView').find('[data-id="' + plusId + '"]').hide();
+            if (this.$().find('#' + plusId).hasClass('fa-plus-square-o')) {
+                this.$().find('#' + plusId).removeClass('fa-plus-square-o');
+                this.$().find('#' + plusId).addClass('fa-minus-square-o');
+                this.$().find('.jsonTreeView').find('[data-id="' + plusId + '"]').show();
+            } else {
+                this.$().find('#' + plusId).removeClass('fa-minus-square-o');
+                this.$().find('#' + plusId).addClass('fa-plus-square-o');
+                this.$().find('.jsonTreeView').find('[data-id="' + plusId + '"]').hide();
             }
         }
     }

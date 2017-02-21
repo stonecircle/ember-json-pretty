@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
     model: function () {
-        return {    "menus": [
+        return [
                         {
                             "name": "menu 1",
                             "events": ["click", "hover"],
@@ -47,7 +47,6 @@ export default Ember.Route.extend({
                             ],
                             "total_submenus": 2
                         }
-                    ]
-                };
+                    ];
     }
 });

@@ -1,16 +1,18 @@
 import Ember from 'ember';
 
-var ApplicationController = Ember.ObjectController.extend({
-    jsonString: function(){
-        var jsonObject = this.get('model.menus');
-        return JSON.stringify(jsonObject);
-    }.property('jsonString'),
-    refreshJson: function(){
-        var jsonObject = JSON.parse(this.jsonString);
-        this.set('model.menus', jsonObject);
+var ApplicationController = Ember.Controller.extend({
 
-        console.log('teste');
-    }.observes('jsonString')
+  jsonString: Ember.computed('model', function(){
+    var jsonObject = this.get('model');
+    return JSON.stringify(jsonObject);
+  }),
+
+  actions: {
+    refreshJson: function(){
+      var jsonObject = JSON.parse(this.get('jsonString'));
+      this.set('model', jsonObject);
+    }
+  }
 });
 
 export default ApplicationController;
